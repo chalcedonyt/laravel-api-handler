@@ -25,6 +25,7 @@ class ApiHandlerTest extends PHPUnit_Framework_TestCase
             'title-not-lk' => 'Example Title',
             'title-not' => 'Example Title|Another Title',
             'comments->title-lk' => 'This comment',
+            'comments->title-not-lk' => 'That comment',
             'id-min' => 5,
             'id-max' => 6,
             'id-gt' => 7,
@@ -188,6 +189,7 @@ class ApiHandlerTest extends PHPUnit_Framework_TestCase
 
         //assert for relation (user->first_name like)
         $this->assertContains(['type' => 'Basic', 'column' => 'comments.title', 'operator' => 'LIKE', 'value' => 'This comment', 'boolean' => 'and'], $wheres);
+        $this->assertContains(['type' => 'Basic', 'column' => 'comments.title', 'operator' => 'NOT LIKE', 'value' => 'That comment', 'boolean' => 'and'], $wheres);
 
         $join = new JoinClause('inner', 'comments');
         $join -> on('posts.id','=','comments.customfk_post_id');
@@ -296,4 +298,6 @@ class ApiHandlerTest extends PHPUnit_Framework_TestCase
         $this->assertObjectHasAttribute('meta', $data);
         $this->assertObjectHasAttribute('data', $data);
     }
+
+    // public function testMul
 }

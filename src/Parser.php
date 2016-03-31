@@ -549,7 +549,11 @@ class Parser
                 //get the table to join to
                 $joinTable = $relation -> getRelated() -> getTable();
                 //do the join
-                $this -> query -> join($joinTable, $firstKey ,'=', $secondKey);
+                $join = new \Illuminate\Database\Query\JoinClause('inner', $joinTable);
+                $join -> on($firstKey,'=', $secondKey);
+                if( !$this -> queryHasJoin($this -> query, $join))
+                    $this -> query -> join($joinTable, $firstKey ,'=', $secondKey);
+
                 //modify the $column name and continue parsing.
                 $column = $joinTable.'.'.$relationColumn;
                 $this -> query -> addSelect($model -> getTable().'.*');
@@ -749,5 +753,26 @@ class Parser
         } else {
             return false;
         }
+    }
+
+    /**
+     * Check if the JoinClause already exists in the query. This is to prevent "1066 Not unique table/alias" errors.
+     * @param Builder
+     * @param JoinClause
+     * @return Boolean
+     */
+    protected function queryHasJoin($query, \Illuminate\Database\Query\JoinClause $join_check){
+        if( empty($query -> joins)){
+            return false;
+        }
+        foreach( $query -> joins as $join ){
+            if($join_check -> type == $join -> type
+                && $join_check -> table == $join -> table
+                && $join_check -> clauses == $join -> clauses
+            ){
+                return true;
+            }
+        }
+        return false;
     }
 }
