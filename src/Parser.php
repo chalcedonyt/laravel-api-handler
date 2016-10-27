@@ -549,7 +549,7 @@ class Parser
                 //get the table to join to
                 $joinTable = $relation -> getRelated() -> getTable();
                 //do the join
-                $join = new \Illuminate\Database\Query\JoinClause('inner', $joinTable);
+                $join = new \Illuminate\Database\Query\JoinClause($this -> query, 'inner', $joinTable);
                 $join -> on($firstKey,'=', $secondKey);
                 if( !$this -> queryHasJoin($this -> query, $join))
                     $this -> query -> join($joinTable, $firstKey ,'=', $secondKey);
